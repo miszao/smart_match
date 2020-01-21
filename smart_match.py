@@ -36,11 +36,11 @@ class SmartMatch(simple_switch_L4_stp.SimpleSwitch13):
 
     def _monitor(self):
         # dodac flow tutaj, priority = 65535
-        actions = [parser.OFPActionOutput(out_port)] ?????
+        actions1 = [parser.OFPActionOutput(out_port=2)]
+        actions2 = [parser.OFPActionOutput(out_port=3)]
         while True:
             for dp in self.datapaths.values():
                 self._request_stats(dp)
-                self._mod_flow(dp,command=of.OFPFC_ADD,match=match, actions=actions,priority=65535)
                 READY_TO_OPTIMIZE_FLAG = bool(self.flow_container) and self.flow_container['ip_src_list']
                 if READY_TO_OPTIMIZE_FLAG:
                     # self.logger.info('self.flow_container should not be empty:')
@@ -48,6 +48,8 @@ class SmartMatch(simple_switch_L4_stp.SimpleSwitch13):
                     self.logger.info(self.naive_bayes.inspect_flow(self.flow_container))
                     self.logger.info(self.naive_bayes.get_label_encoding())
             hub.sleep(5)
+        self._mod_flow(dp,command=of.OFPFC_ADD,match=match, actions=actions1,priority=65535)
+        self._mod_flow(dp,command=of.OFPFC_ADD,match=match, actions=actions2,priority=65535)
 
     def _mod_flow(self, datapath, command, match, actions, priority):
          ofproto = datapath.ofproto
